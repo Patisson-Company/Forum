@@ -9,7 +9,7 @@ def ulid() -> str:
     return str(ULID())
 
 class Message(Base):
-    __tablename__ = "services"
+    __tablename__ = "messages"
 
     id = Column(String, primary_key=True, default=ulid)
     user_id = Column(String)

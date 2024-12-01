@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Sequence
 
 from config import SelfService
 from db.models import Message, Topic
@@ -31,6 +31,19 @@ async def create_message(session: AsyncSession, content: str,
             error=ErrorCode.INVALID_PARAMETERS,
             extra=str(e)
         )
+    
+    
+async def get_message_by_topic(session: AsyncSession, topic_id: str, 
+                               limit: int = 10, offset: int = 0) -> Sequence[Message]:
+    query = (
+        select(Message)
+        .where(Message.topic_id == topic_id)
+        .order_by(Message.timestamp.desc())
+        .limit(limit)
+        .offset(offset)
+    )
+    result = await session.execute(query)
+    return result.scalars().all()
         
 
 async def create_topic(session: AsyncSession, id: str, check: bool = True) -> (
@@ -47,7 +60,6 @@ async def create_topic(session: AsyncSession, id: str, check: bool = True) -> (
                 fields=[QBook.id], limit=1, ids=[id]
             )
         )
-        print(response.body.data.books)
         if len(response.body.data.books) == 0:
             raise ValueError('Incorrect topic id')
         
