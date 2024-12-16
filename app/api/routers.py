@@ -3,7 +3,7 @@ import datetime
 from api.deps import SessionDep, UseChat_UserJWT, ServiceJWT_ForumAccess
 from config import logger
 from db.crud import get_message_by_topic
-from fastapi import APIRouter, Request
+from fastapi import APIRouter
 from pydantic import BaseModel
 
 router = APIRouter()

@@ -10,8 +10,8 @@ from config import logger, SelfService
 from db.base import get_session
 from fastapi import Depends, Header, HTTPException, status
 from opentelemetry import trace
-from patisson_request.depends import (dep_jaeger_client_decorator,
-                                      dep_jaeger_service_decorator,
+from patisson_request.depends import (dep_opentelemetry_client_decorator,
+                                      dep_opentelemetry_service_decorator,
                                       verify_client_token_dep,
                                       verify_service_token_dep)
 from patisson_request.errors import ErrorCode, ErrorSchema, InvalidJWT
@@ -35,7 +35,7 @@ broker = RedisAsyncBroker(
 )
 
 
-@dep_jaeger_service_decorator(tracer)
+@dep_opentelemetry_service_decorator(tracer)
 async def verify_service_token(
     credentials: HTTPAuthorizationCredentials = Depends(security)
     ) -> ServiceAccessTokenPayload:
@@ -51,7 +51,7 @@ async def verify_service_token(
     return payload
 
 
-@dep_jaeger_service_decorator(tracer)
+@dep_opentelemetry_service_decorator(tracer)
 async def ws_verify_service_token(ws: WebSocket) -> ServiceAccessTokenPayload:
     try:
         token_header = ws.headers.get('authorization')
@@ -104,7 +104,7 @@ async def ws_verify_serice__forum_access__token(
 
 
 
-@dep_jaeger_client_decorator(tracer)
+@dep_opentelemetry_client_decorator(tracer)
 async def verify_user_token(
     X_Client_Token: str = Header(...)
     ) -> ClientAccessTokenPayload:
@@ -121,7 +121,7 @@ async def verify_user_token(
     return payload
 
 
-@dep_jaeger_client_decorator(tracer)
+@dep_opentelemetry_client_decorator(tracer)
 async def ws_verify_user_token(ws: WebSocket) -> ClientAccessTokenPayload:
     try:
         token = ws.headers.get('x-client-token')

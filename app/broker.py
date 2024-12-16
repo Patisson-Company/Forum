@@ -2,7 +2,7 @@ import asyncio
 import json
 from abc import ABC, abstractmethod
 from functools import cache
-from typing import (AsyncGenerator, Awaitable, Callable, NewType, NoReturn, Optional,
+from typing import (AsyncGenerator, Awaitable, Callable, NoReturn, Optional,
                     TypeAlias)
 
 import redis.asyncio as aioredis
@@ -46,14 +46,12 @@ class Topic:
             await mes_handler(message, self.ws_pool)
             
     async def add_ws(self, ws: WebSocket) -> None:
-        print('1. add_ws', len(self.ws_pool))
         if ws in self.ws_pool: raise UniqueSessionError
         if len(self) == 0:
             await self.task_start()
         self.ws_pool.append(ws)
 
     async def del_ws(self, ws: WebSocket) -> None:
-        print('1. del_ws', len(self.ws_pool))
         try:
             await ws.close()
         except: pass
