@@ -10,12 +10,17 @@ if __name__ == "__main__":
     app_launcher = UvicornFastapiAppLauncher(app, router,
                         service_name=config.SERVICE_NAME,
                         host=config.SERVICE_HOST)
+    health_path = f'/{config.SERVICE_NAME}/health'
+    
+    app_launcher = UvicornFastapiAppLauncher(app, router,
+                        service_name=config.SERVICE_NAME,
+                        host=config.SERVICE_HOST)
     app_launcher.add_token_middleware(
         config.SelfService.get_access_token,
-        excluded_paths=[f'/health']
+        excluded_paths=[health_path]
         )
     app_launcher.add_sync_consul_health_path()
-    app_launcher.consul_register(check_path=f'/{config.SERVICE_NAME}/health')
+    app_launcher.consul_register(health_path)
     app_launcher.add_jaeger()
     app_launcher.include_router(prefix=f'/{config.SERVICE_NAME}')
     app_launcher.app_run()

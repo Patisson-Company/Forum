@@ -1,3 +1,45 @@
+"""
+This module provides an implementation of an asynchronous message broker and topic-based WebSocket management using Redis.
+
+Classes:
+    - BrokerMessage: A model representing a message sent through the broker.
+    - UniqueSessionError: Custom exception raised when a user attempts to create multiple sessions for the same topic.
+    - Topic: Represents a topic that manages WebSocket connections and handles broadcasting messages.
+    - BaseAsyncBroker: Abstract base class defining the interface for an asynchronous broker.
+    - RedisAsyncBroker: Concrete implementation of BaseAsyncBroker using Redis for message distribution and user tracking.
+    - AsyncBrokerSession: Manages the lifecycle of a WebSocket session with the broker.
+
+Type Aliases:
+    - WebSocketPool: A list of WebSocket connections.
+    - AsyncMessageGenerator: Asynchronous generator for broker messages.
+    - AwaitableMessageHandler: A callable handling broker messages and a WebSocket pool.
+    - UserId: Alias for a user identifier string.
+    - TopicId: Alias for a topic identifier string.
+    - GetSessionWrap: A callable returning an AsyncBrokerSession instance.
+
+Functions:
+    - get_async_session: Factory function to create a callable for obtaining broker sessions.
+
+Details:
+    - BrokerMessage:
+        - Fields: id, user_id, content, optional file.
+        - Represents the structure of messages exchanged in topics.
+
+    - Topic:
+        - Manages WebSocket connections (`ws_pool`) for a specific topic.
+        - Handles broadcasting messages from an asynchronous generator (`mes_gen`) using a handler (`mes_handler`).
+        - Automatically starts and stops broadcasting tasks based on the presence of WebSocket connections.
+
+    - RedisAsyncBroker:
+        - Extends BaseAsyncBroker using Redis for message storage and user tracking.
+        - Manages topics and WebSocket connections while ensuring unique sessions for users.
+        - Publishes messages to Redis channels and processes incoming messages via an asynchronous generator.
+
+    - AsyncBrokerSession:
+        - Encapsulates operations to create and manage WebSocket connections for a specific topic.
+        - Supports publishing messages and closing connections.
+"""
+
 import asyncio
 import json
 from abc import ABC, abstractmethod
